@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Career Copilot</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <h1>🎓 Career Copilot AI</h1>
+            <div class="user-info">
+                <span id="userEmail">Loading...</span>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+        
+        <!-- AI Agent Section -->
+        <div class="ai-section">
+            <h2>📄 Upload Job Description for AI Analysis</h2>
+            <p style="color: rgba(255,255,255,0.8); text-align: center; margin-bottom: 30px;">
+                Paste the job description below and our AI will generate comprehensive interview questions, 
+                answers, behavioral tips, and grooming suggestions tailored for you!
+            </p>
+            
+            <div class="upload-area">
+                <textarea 
+                    id="jobDescription" 
+                    placeholder="Paste the job description here...&#10;&#10;Example:&#10;Position: Software Engineer&#10;Requirements: Python, Django, REST APIs&#10;Experience: 2-3 years..."></textarea>
+            </div>
+            
+            <button id="generateBtn" class="btn-generate" onclick="generateQuestions()">
+                🚀 Generate Interview Questions
+            </button>
+            
+            <!-- Loading Indicator -->
+            <div id="loadingIndicator" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>AI is analyzing the job description and generating personalized questions...</p>
+            </div>
+            
+            <!-- Results Container -->
+            <div id="resultsContainer" class="results-container" style="display: none;">
+                <!-- Technical Questions for Freshers -->
+                <div class="question-category">
+                    <h3>💼 Technical Questions for Freshers</h3>
+                    <div id="fresherQuestions"></div>
+                </div>
+                
+                <!-- Technical Questions for Experienced -->
+                <div class="question-category">
+                    <h3>🎯 Technical Questions for Experienced Candidates</h3>
+                    <div id="experiencedQuestions"></div>
+                </div>
+                
+                <!-- Behavioral Questions -->
+                <div class="question-category">
+                    <h3>🤝 Behavioral Questions</h3>
+                    <div id="behavioralQuestions"></div>
+                </div>
+                
+                <!-- Grooming & Professional Tips -->
+                <div class="question-category">
+                    <h3>✨ Grooming & Professional Tips</h3>
+                    <div id="groomingTips"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+    
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

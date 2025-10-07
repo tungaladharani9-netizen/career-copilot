@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Copilot - Your AI Career Guide</title>
+    
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- AOS (Animate On Scroll) -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    
+    <!-- Particles.js for background -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+    
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-navbar animate__animated animate__fadeInDown">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-graduation-cap gradient-text"></i>
+                <span class="ms-2 gradient-text fw-bold">Career Copilot</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light btn-sm ms-2" id="loginBtn">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-gradient btn-sm ms-2" id="registerBtn">
+                            <i class="fas fa-user-plus me-2"></i>Register
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6 text-center text-lg-start" data-aos="fade-right">
+                    <h1 class="display-1 fw-bold mb-4 animate__animated animate__fadeInUp">
+                        Career <span class="gradient-text">Copilot</span>
+                    </h1>
+                    <p class="lead mb-4 text-white-70 animate__animated animate__fadeInUp animate__delay-1s">
+                        Your AI-Powered Interview Preparation Assistant. Master any interview with personalized questions, expert answers, and professional tips.
+                    </p>
+                    <div class="d-flex gap-3 justify-content-center justify-content-lg-start mb-5 animate__animated animate__fadeInUp animate__delay-2s">
+                        <button class="btn btn-gradient btn-lg px-5" onclick="document.getElementById('registerBtn').click()">
+                            <i class="fas fa-rocket me-2"></i>Get Started Free
+                        </button>
+                        <button class="btn btn-outline-light btn-lg px-5" onclick="document.getElementById('features').scrollIntoView({behavior: 'smooth'})">
+                            <i class="fas fa-play-circle me-2"></i>Learn More
+                        </button>
+                    </div>
+                    
+                    <!-- Career Options Pills -->
+                    <div class="career-pills animate__animated animate__fadeInUp animate__delay-3s">
+                        <span class="badge career-badge">
+                            <i class="fas fa-code me-1"></i>Software Engineer
+                        </span>
+                        <span class="badge career-badge">
+                            <i class="fas fa-chart-line me-1"></i>Data Scientist
+                        </span>
+                        <span class="badge career-badge">
+                            <i class="fas fa-layer-group me-1"></i>Product Manager
+                        </span>
+                        <span class="badge career-badge">
+                            <i class="fas fa-palette me-1"></i>UI/UX Designer
+                        </span>
+                        <span class="badge career-badge">
+                            <i class="fas fa-chart-pie me-1"></i>Business Analyst
+                        </span>
+                        <span class="badge career-badge">
+                            <i class="fas fa-bullhorn me-1"></i>Marketing Manager
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Graduate Symbol with 3D Effect -->
+                <div class="col-lg-6" data-aos="fade-left">
+                    <div class="graduate-container">
+                        <div class="graduate-symbol">
+                            <div class="circle-bg"></div>
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section id="features" class="features-section py-5">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2 class="display-4 fw-bold gradient-text mb-3">Why Choose Career Copilot?</h2>
+                <p class="lead text-white-70">Everything you need to ace your next interview</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-card glass-card h-100">
+                        <div class="feature-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>Upload Job Description</h3>
+                        <p>Simply paste or upload the job description you're applying for and let our AI analyze it.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-card glass-card h-100">
+                        <div class="feature-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3>AI-Powered Analysis</h3>
+                        <p>Advanced AI generates personalized interview questions tailored to your specific role.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-card glass-card h-100">
+                        <div class="feature-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h3>Expert Answers</h3>
+                        <p>Get comprehensive answers for both freshers and experienced professionals.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-card glass-card h-100">
+                        <div class="feature-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3>Behavioral Questions</h3>
+                        <p>Practice common behavioral questions with STAR method sample responses.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-card glass-card h-100">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h3>Grooming Tips</h3>
+                        <p>Learn professional etiquette, dress code, and interview best practices.</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-card glass-card h-100">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3>Track Progress</h3>
+                        <p>Save your preparations and monitor your interview readiness over time.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works-section py-5">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2 class="display-4 fw-bold gradient-text mb-3">How It Works</h2>
+                <p class="lead text-white-70">Get interview-ready in 3 simple steps</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="step-card text-center">
+                        <div class="step-number">1</div>
+                        <div class="step-icon">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <h4>Upload Job Description</h4>
+                        <p>Copy and paste the job description from any job portal</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="step-card text-center">
+                        <div class="step-number">2</div>
+                        <div class="step-icon">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <h4>AI Generates Questions</h4>
+                        <p>Our AI analyzes and creates personalized interview questions</p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="step-card text-center">
+                        <div class="step-number">3</div>
+                        <div class="step-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h4>Practice & Ace It</h4>
+                        <p>Review answers, practice, and ace your interview with confidence</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-modal">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title gradient-text fw-bold">
+                        <i class="fas fa-user-plus me-2"></i>Create Your Account
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label class="form-label text-white">
+                                <i class="fas fa-envelope me-2"></i>Email Address
+                            </label>
+                            <input type="email" class="form-control glass-input" id="regEmail" placeholder="your.email@example.com" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-white">
+                                <i class="fas fa-lock me-2"></i>Password
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control glass-input" id="regPassword" placeholder="Enter strong password" required>
+                                <button class="btn btn-outline-light" type="button" onclick="togglePassword('regPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <small class="text-white-50">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Must contain: 8+ chars, uppercase, lowercase, number, special char
+                            </small>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label text-white">
+                                <i class="fas fa-lock me-2"></i>Confirm Password
+                            </label>
+                            <input type="password" class="form-control glass-input" id="regConfirmPassword" placeholder="Re-enter password" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-gradient w-100 py-3 fw-bold">
+                            <i class="fas fa-rocket me-2"></i>Create Account
+                        </button>
+                        
+                        <p class="text-center mt-3 text-white-70 mb-0">
+                            Already have an account? 
+                            <a href="#" class="gradient-text fw-bold" onclick="switchToLogin()">Login here</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-modal">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title gradient-text fw-bold">
+                        <i class="fas fa-sign-in-alt me-2"></i>Welcome Back
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label text-white">
+                                <i class="fas fa-envelope me-2"></i>Email Address
+                            </label>
+                            <input type="email" class="form-control glass-input" id="loginEmail" placeholder="your.email@example.com" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label text-white">
+                                <i class="fas fa-lock me-2"></i>Password
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control glass-input" id="loginPassword" placeholder="Enter your password" required>
+                                <button class="btn btn-outline-light" type="button" onclick="togglePassword('loginPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        
+                        <div id="attemptsWarning" class="alert alert-warning d-none" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span id="warningText"></span>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-gradient w-100 py-3 fw-bold">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Dashboard
+                        </button>
+                        
+                        <p class="text-center mt-3 text-white-70 mb-0">
+                            Don't have an account? 
+                            <a href="#" class="gradient-text fw-bold" onclick="switchToRegister()">Register now</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="notificationToast" class="toast" role="alert">
+            <div class="toast-header">
+                <i class="fas fa-bell me-2 text-primary"></i>
+                <strong class="me-auto">Career Copilot</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body"></div>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner-container">
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3 text-white">Processing...</p>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0 text-white-50">
+                        <i class="fas fa-graduation-cap me-2"></i>
+                        &copy; 2025 Career Copilot. All rights reserved.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="#" class="text-white-50 me-3"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-white-50 me-3"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="text-white-50"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="js/main.js"></script>
+    
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 100
+        });
+        
+        // Initialize Particles.js
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#ffffff' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: false },
+                size: { value: 3, random: true },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#ffffff',
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 2,
+                    direction: 'none',
+                    random: false,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: { enable: true, mode: 'repulse' },
+                    onclick: { enable: true, mode: 'push' },
+                    resize: true
+                }
+            },
+            retina_detect: true
+        });
+    </script>
+</body>
+</html>
