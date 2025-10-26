@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Chat - Career Copilot</title>
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Header -->
+    <div class="dashboard-header">
+      <h1>💬 AI Chat - Career Copilot</h1>
+      <div class="user-info">
+        <span id="userEmail">Loading...</span>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <!-- Chat Section -->
+    <div class="ai-section">
+      <h2>🤖 Chat with AI</h2>
+      <div class="question-category" style="display:flex; flex-direction: column; gap: 10px;">
+        <div id="chatMessages" style="height: 50vh; overflow-y: auto; padding-right: 6px;"></div>
+        <div style="display:flex; gap:10px;">
+          <input id="chatInput" type="text" placeholder="Ask about skills, interview prep, mock questions..." style="flex:1; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #0b0b0b; color: #fff;" />
+          <button id="chatSendBtn" type="button" class="btn-generate">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:20px;">
+      <a href="dashboard.html" class="btn-generate" style="display:inline-block; width:auto; padding:12px 18px; text-decoration:none;">← Back to Dashboard</a>
+    </div>
+  </div>
+
+  <div id="notification" class="notification"></div>
+
+  <script src="js/chat.js"></script>
+</body>
+</html>

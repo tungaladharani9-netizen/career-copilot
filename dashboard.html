@@ -35,6 +35,11 @@
                 🚀 Generate Interview Questions
             </button>
             
+            <!-- Chat Toggle Button placed below Generate button -->
+            <button id="chatToggleBtn" type="button" class="btn-generate" style="margin-top:12px;" onclick="openChatPage()">
+                💬 Chat
+            </button>
+            
             <!-- Loading Indicator -->
             <div id="loadingIndicator" class="loading" style="display: none;">
                 <div class="spinner"></div>
@@ -72,6 +77,33 @@
     
     <!-- Notification -->
     <div id="notification" class="notification"></div>
+    
+    <div id="chatContainer" style="display: none; position: fixed; right: 20px; bottom: 80px; width: 360px; max-height: 60vh; background: #111; color: #fff; border: 1px solid #333; border-radius: 10px; overflow: hidden; z-index: 9999;">
+        <div style="padding: 10px; border-bottom: 1px solid #333; font-weight: 600;">AI Chat</div>
+        <div id="chatMessages" style="padding: 10px; overflow-y: auto; height: 300px;"></div>
+        <div style="display: flex; gap: 8px; padding: 10px; border-top: 1px solid #333;">
+            <input id="chatInput" type="text" placeholder="Type your question..." style="flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #333; background: #0b0b0b; color: #fff;" onkeydown="if(event.key==='Enter'){sendChatMessage()}" />
+            <button id="chatSendBtn" class="btn-generate" onclick="sendChatMessage()">Send</button>
+        </div>
+    </div>
+    
+    <!-- Safety shim retained for reliability if external JS is delayed/not loaded -->
+    <script>
+      window.toggleChat = window.toggleChat || function() {
+        var chat = document.getElementById('chatContainer');
+        if (!chat) return;
+        chat.style.display = chat.style.display === 'block' ? 'none' : 'block';
+      };
+      window.sendChatMessage = window.sendChatMessage || function() {};
+      window.openChatPage = window.openChatPage || function() {
+        try {
+          var jdEl = document.getElementById('jobDescription');
+          var jd = jdEl ? jdEl.value : '';
+          localStorage.setItem('jd_for_chat', jd);
+        } catch (e) {}
+        window.location.href = 'chat.html';
+      };
+    </script>
     
     <script src="js/dashboard.js"></script>
 </body>

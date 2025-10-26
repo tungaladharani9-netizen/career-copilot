@@ -1,17 +1,36 @@
 // dashboard.js - Dashboard and AI Agent Scripts
 
-// Check if user is logged in
-document.addEventListener('DOMContentLoaded', () => {
+// Initialize dashboard and bind events (works whether DOM is already loaded or not)
+function initDashboard() {
+    // Chat toggle handled via inline onclick with safety shim
+
     const userId = localStorage.getItem('user_id');
     const userEmail = localStorage.getItem('user_email');
-    
+
     if (!userId || !userEmail) {
         window.location.href = 'index.html';
         return;
     }
-    
-    document.getElementById('userEmail').textContent = userEmail;
-});
+
+    const emailEl = document.getElementById('userEmail');
+    if (emailEl) emailEl.textContent = userEmail;
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDashboard);
+} else {
+    initDashboard();
+}
+
+// Navigate to dedicated chat page with current JD stored for context
+window.openChatPage = function() {
+    try {
+        const jdEl = document.getElementById('jobDescription');
+        const jd = jdEl ? jdEl.value : '';
+        localStorage.setItem('jd_for_chat', jd);
+    } catch (_) {}
+    window.location.href = 'chat.html';
+}
 
 // Show notification
 function showNotification(message, type = 'success') {
@@ -69,7 +88,8 @@ async function generateQuestions() {
             },
             body: JSON.stringify({
                 user_id: userId,
-                job_description: jobDescription
+                job_description: jobDescription,
+                count: 5
             })
         });
         
@@ -78,6 +98,8 @@ async function generateQuestions() {
         if (result.success) {
             displayResults(result.data);
             showNotification('Interview questions generated successfully!', 'success');
+            // Open chat after generating to continue as AI tool
+            if (window.toggleChat) window.toggleChat();
         } else {
             showNotification(result.message || 'Failed to generate questions', 'error');
         }
@@ -173,3 +195,59 @@ window.addEventListener('load', () => {
         document.getElementById('jobDescription').value = draft;
     }
 });
+
+const chatState = { messages: [] };
+
+window.toggleChat = function() {
+    const chat = document.getElementById('chatContainer');
+    if (!chat) return;
+    const opening = chat.style.display !== 'block';
+    chat.style.display = opening ? 'block' : 'none';
+    if (opening && chatState.messages.length === 0) {
+        chatState.messages.push({
+            role: 'ai',
+            text: 'Hi! I\'m your AI interview coach. Ask me anything about this job description, required skills, likely interview topics, or practice behavioral questions. You can request explanations, examples, or mock interviews.'
+        });
+        renderChat();
+    }
+}
+
+function renderChat() {
+    const box = document.getElementById('chatMessages');
+    box.innerHTML = '';
+    chatState.messages.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'chat-msg ' + (m.role === 'user' ? 'user' : 'ai');
+        div.textContent = m.text;
+        box.appendChild(div);
+    });
+    box.scrollTop = box.scrollHeight;
+}
+
+window.sendChatMessage = async function() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text) return;
+    chatState.messages.push({ role: 'user', text });
+    renderChat();
+    input.value = '';
+    try {
+        const userId = localStorage.getItem('user_id');
+        const jobDescription = document.getElementById('jobDescription').value.trim();
+        const response = await fetch('php/chat.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, job_description: jobDescription, message: text, context: '' })
+        });
+        const result = await response.json();
+        if (result.success) {
+            chatState.messages.push({ role: 'ai', text: result.reply });
+        } else {
+            chatState.messages.push({ role: 'ai', text: 'Sorry, I could not process that.' });
+        }
+    } catch (e) {
+        chatState.messages.push({ role: 'ai', text: 'Network error. Please try again.' });
+    } finally {
+        renderChat();
+    }
+}

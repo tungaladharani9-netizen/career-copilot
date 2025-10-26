@@ -3,6 +3,16 @@
 session_start();
 
 // Database credentials
+// OpenAI API Key (provided by user) for real AI responses
+if (!defined('OPENAI_API_KEY')) {
+    define('OPENAI_API_KEY', 'YOUR_OPENAI_API_KEY');
+}
+// Default model (can be changed to 'gpt-4o-mini' or others available to your key)
+if (!defined('OPENAI_MODEL')) {
+    define('OPENAI_MODEL', 'gpt-4o-mini');
+}
+
+// Database credentials
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');

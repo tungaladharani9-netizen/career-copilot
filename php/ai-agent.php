@@ -7,11 +7,52 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     $user_id = $input['user_id'] ?? 0;
     $job_description = sanitize_input($input['job_description'] ?? '');
+    $count = isset($input['count']) && is_numeric($input['count']) ? max(1, min(20, intval($input['count']))) : 10;
     
     if (empty($job_description)) {
         echo json_encode([
             'success' => false,
             'message' => 'Job description is required'
+        ]);
+        exit;
+    }
+
+function normalizeQuestion($q) {
+    $q = strip_tags($q);
+    // remove content in parentheses like (in context of X)
+    $q = preg_replace('/\s*\([^\)]*\)\s*/', ' ', $q);
+    // lowercase
+    $q = mb_strtolower($q);
+    // remove punctuation
+    $q = preg_replace('/[\p{P}\p{S}]+/u', ' ', $q);
+    // collapse whitespace
+    $q = preg_replace('/\s+/', ' ', trim($q));
+    return $q;
+}
+
+function uniqueQuestions($list, $count) {
+    $seen = [];
+    $out = [];
+    foreach ($list as $item) {
+        $q = is_array($item) && isset($item['question']) ? trim($item['question']) : '';
+        if ($q === '') { continue; }
+        $key = normalizeQuestion($q);
+        if (!isset($seen[$key])) {
+            $seen[$key] = true;
+            $out[] = $item;
+            if (count($out) >= $count) break;
+        }
+    }
+    // Enforce count cap
+    if (count($out) > $count) {
+        $out = array_slice($out, 0, $count);
+    }
+    return $out;
+}
+    if (mb_strlen($job_description) < 50) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Please provide a more detailed job description (at least 50 characters)'
         ]);
         exit;
     }
@@ -22,22 +63,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->execute();
     $job_id = $conn->insert_id;
     
-    // OPTION 1: Using OpenAI API (Recommended for production)
-    // Uncomment and add your API key
-    /*
-    $api_key = 'YOUR_OPENAI_API_KEY';
-    $questions = callOpenAI($job_description, $api_key);
-    */
-    
-    // OPTION 2: Using Claude API (Alternative)
-    // Uncomment and add your API key
-    /*
-    $api_key = 'YOUR_ANTHROPIC_API_KEY';
-    $questions = callClaudeAPI($job_description, $api_key);
-    */
-    
-    // OPTION 3: Mock data for testing (Remove this in production)
-    $questions = generateMockQuestions($job_description);
+    // Auto-select provider based on environment variables
+    $openaiKey = getenv('OPENAI_API_KEY') ?: (defined('OPENAI_API_KEY') ? OPENAI_API_KEY : '');
+    $anthropicKey = getenv('ANTHROPIC_API_KEY') ?: (defined('ANTHROPIC_API_KEY') ? ANTHROPIC_API_KEY : '');
+    if (!empty($openaiKey)) {
+        $questions = callOpenAI($job_description, $openaiKey, $count);
+    } elseif (!empty($anthropicKey)) {
+        $questions = callClaudeAPI($job_description, $anthropicKey, $count);
+    } else {
+        // Fallback to mock data
+        $questions = generateMockQuestions($job_description, $count);
+    }
+
+    // Ensure valid structure or fallback to mock
+    if (!is_array($questions) || empty($questions)) {
+        $questions = generateMockQuestions($job_description, $count);
+    }
+    $questions = array_merge([
+        'fresher' => [],
+        'experienced' => [],
+        'behavioral' => [],
+        'grooming' => []
+    ], $questions);
+
+    // Dedupe and enforce count per category
+    $questions['fresher'] = uniqueQuestions($questions['fresher'] ?? [], $count);
+    $questions['experienced'] = uniqueQuestions($questions['experienced'] ?? [], $count);
+    $questions['behavioral'] = uniqueQuestions($questions['behavioral'] ?? [], $count);
+    // Grooming are strings; ensure uniqueness and count
+    if (isset($questions['grooming']) && is_array($questions['grooming'])) {
+        $questions['grooming'] = array_values(array_unique($questions['grooming']));
+        $questions['grooming'] = array_slice($questions['grooming'], 0, $count);
+    }
     
     // Store questions in database
     foreach ($questions['fresher'] as $q) {
@@ -71,24 +128,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 // Function to call OpenAI API
-function callOpenAI($jobDescription, $apiKey) {
+function callOpenAI($jobDescription, $apiKey, $count) {
     $url = 'https://api.openai.com/v1/chat/completions';
     
     $prompt = "Analyze this job description and generate:\n
-    1. 5 technical interview questions for freshers with detailed answers\n
-    2. 5 technical interview questions for experienced candidates with detailed answers\n
-    3. 5 behavioral interview questions with sample answers using STAR method\n
-    4. 5 grooming and professional etiquette tips\n\n
+    1. {$count} technical interview questions for freshers with detailed answers\n
+    2. {$count} technical interview questions for experienced candidates with detailed answers\n
+    3. {$count} behavioral interview questions with sample answers using STAR method\n
+    4. {$count} grooming and professional etiquette tips\n\n
     Job Description: $jobDescription\n\n
     Return response in JSON format with keys: fresher, experienced, behavioral, grooming";
     
     $data = [
-        'model' => 'gpt-3.5-turbo',
+        'model' => (defined('OPENAI_MODEL') ? OPENAI_MODEL : 'gpt-3.5-turbo'),
         'messages' => [
             ['role' => 'system', 'content' => 'You are an expert career counselor and interview coach.'],
             ['role' => 'user', 'content' => $prompt]
         ],
-        'temperature' => 0.7
+        'temperature' => 0.9
     ];
     
     $ch = curl_init($url);
@@ -101,21 +158,33 @@ function callOpenAI($jobDescription, $apiKey) {
     ]);
     
     $response = curl_exec($ch);
+    $http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if ($response === false || $http < 200 || $http >= 300) {
+        curl_close($ch);
+        return null;
+    }
     curl_close($ch);
-    
     $result = json_decode($response, true);
-    return json_decode($result['choices'][0]['message']['content'], true);
+    if (!is_array($result) || !isset($result['choices'][0]['message']['content'])) {
+        return null;
+    }
+    $content = $result['choices'][0]['message']['content'];
+    $parsed = json_decode($content, true);
+    if (!is_array($parsed)) {
+        return null;
+    }
+    return $parsed;
 }
 
 // Function to call Claude API
-function callClaudeAPI($jobDescription, $apiKey) {
+function callClaudeAPI($jobDescription, $apiKey, $count) {
     $url = 'https://api.anthropic.com/v1/messages';
     
     $prompt = "Analyze this job description and generate:\n
-    1. 5 technical interview questions for freshers with detailed answers\n
-    2. 5 technical interview questions for experienced candidates with detailed answers\n
-    3. 5 behavioral interview questions with sample answers using STAR method\n
-    4. 5 grooming and professional etiquette tips\n\n
+    1. {$count} technical interview questions for freshers with detailed answers\n
+    2. {$count} technical interview questions for experienced candidates with detailed answers\n
+    3. {$count} behavioral interview questions with sample answers using STAR method\n
+    4. {$count} grooming and professional etiquette tips\n\n
     Job Description: $jobDescription\n\n
     Return response in JSON format with keys: fresher, experienced, behavioral, grooming";
     
@@ -138,18 +207,34 @@ function callClaudeAPI($jobDescription, $apiKey) {
     ]);
     
     $response = curl_exec($ch);
+    $http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if ($response === false || $http < 200 || $http >= 300) {
+        curl_close($ch);
+        return null;
+    }
     curl_close($ch);
-    
     $result = json_decode($response, true);
-    return json_decode($result['content'][0]['text'], true);
+    if (!is_array($result) || !isset($result['content'][0]['text'])) {
+        return null;
+    }
+    $parsed = json_decode($result['content'][0]['text'], true);
+    if (!is_array($parsed)) {
+        return null;
+    }
+    return $parsed;
 }
 
 // Mock function for testing (Replace with actual AI API in production)
-function generateMockQuestions($jobDescription) {
+function generateMockQuestions($jobDescription, $count) {
     // Extract key skills from job description
     $skills = extractSkills($jobDescription);
     
-    return [
+    // Shuffle skills for variation
+    if (!empty($skills)) {
+        shuffle($skills);
+    }
+
+    $base = [
         'fresher' => [
             [
                 'question' => 'What are the fundamental concepts you need to understand for this role?',
@@ -224,6 +309,59 @@ function generateMockQuestions($jobDescription) {
             'Follow-up Etiquette: Send a thank-you email within 24 hours, reference specific discussion points, reiterate your interest, keep it concise (3-4 paragraphs), proofread carefully, and follow up on timeline if you don\'t hear back within the specified period.'
         ]
     ];
+
+    // Randomize base order for uniqueness per request
+    foreach (['fresher','experienced','behavioral','grooming'] as $k) {
+        if (isset($base[$k]) && is_array($base[$k])) {
+            shuffle($base[$k]);
+        }
+    }
+
+    $expanded = [];
+    $expanded['fresher'] = expandListWithIndex($base['fresher'], $count, $skills);
+    $expanded['experienced'] = expandListWithIndex($base['experienced'], $count, $skills);
+    $expanded['behavioral'] = expandListWithIndex($base['behavioral'], $count, $skills);
+    $expanded['grooming'] = expandListPlain($base['grooming'], $count);
+    return $expanded;
+}
+
+function expandListWithIndex($items, $count, $skills = []) {
+    $out = [];
+    $n = count($items);
+    if ($n === 0) return $out;
+    // If asked count is within base length, return unique items only (no repetition)
+    if ($count <= $n) {
+        for ($i = 0; $i < $count; $i++) {
+            $tpl = $items[$i];
+            $skillContext = (!empty($skills)) ? $skills[$i % count($skills)] : '';
+            $q = $tpl['question'];
+            if ($skillContext) { $q = preg_replace('/\?$/', '', $q) . " (in context of $skillContext)?"; }
+            $a = $tpl['answer'];
+            if ($skillContext) { $a .= " Consider highlighting your experience with $skillContext when relevant."; }
+            $out[] = ['question' => $q, 'answer' => $a];
+        }
+        return $out;
+    }
+    // Otherwise, cycle through
+    for ($i = 0; $i < $count; $i++) {
+        $tpl = $items[$i % $n];
+        $skillContext = (!empty($skills)) ? $skills[$i % count($skills)] : '';
+        $q = $tpl['question'];
+        if ($skillContext) { $q = preg_replace('/\?$/', '', $q) . " (in context of $skillContext)?"; }
+        $a = $tpl['answer'];
+        if ($skillContext) { $a .= " Consider highlighting your experience with $skillContext when relevant."; }
+        $out[] = ['question' => $q, 'answer' => $a];
+    }
+    return $out;
+}
+
+function expandListPlain($items, $count) {
+    $out = [];
+    $n = count($items);
+    for ($i = 0; $i < $count; $i++) {
+        $out[] = $items[$i % $n];
+    }
+    return $out;
 }
 
 function extractSkills($text) {
